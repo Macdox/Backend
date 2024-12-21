@@ -11,9 +11,14 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: false
         },
+		LastName:{
+			type: String,
+			required: false
+		},
         Phone:{
             type:Number,
-            requried:false
+            requried:false,
+			size:10
         },
 		password: {
 			type: String,
@@ -39,4 +44,4 @@ const userSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-export const student = mongoose.model("Student", userSchema);
+export const Student = mongoose.model("Student", userSchema);

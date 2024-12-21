@@ -9,6 +9,8 @@ import {
     verifyTeacher,
 } from '../controller/teachers.controller.js';
 
+import { LoginStudent, LogoutStudent, SignupStudent, StudentForgotPassword, studentResetPassword, VerifyStudent } from '../controller/students.controller.js';
+
 import { verifyToken } from '../middlewares/verifytoken.js';
 
 const router = express.Router();
@@ -27,4 +29,12 @@ router.post('/resetpassword/:token', resetPassword);
 router.post('/forgotpassword', forgotPassword);
 router.post('/verifyTeacher', verifyTeacher);
 
+
+// student register and login
+router.post('/studentSignup', SignupStudent);
+router.post('/verifyStudent', VerifyStudent);
+router.post('/studentLogin', LoginStudent);
+router.post('/studentLogout', LogoutStudent)
+router.post('/studentForgetpassword', StudentForgotPassword);
+router.post('/studendResetpassword/:token', studentResetPassword);
 export default router;

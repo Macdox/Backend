@@ -164,7 +164,7 @@ export const forgotPassword = async (req, res) => {
 		const resetPasswordExpires = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
 		teacher.resetPasswordToken = resetToken;
-		teacher.resetPasswordExpires = resetPasswordExpires;
+		teacher.resetPasswordExpiresAT = resetPasswordExpires;
 
 		await teacher.save();
 
