@@ -23,7 +23,7 @@ export const registerTeacher = async (req, res) =>
                 return res.status(400).json({ sucess:false, message: "teacher Already exists"});
             }
 
-            const hasspassword = await bycrypt.hash(password, 10);
+            const hasspassword = await bycryptjs.hash(password, 10);
             const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
             
             if(password !== passwordConfirm)
@@ -44,7 +44,7 @@ export const registerTeacher = async (req, res) =>
 
             await sendVerificationEmail(teacher.email, verificationToken);
 
-            res.status(201).json({
+            res.status(200).json({
                 success: true,
                 message: "User created successfully",
                 teacher: {
@@ -115,37 +115,38 @@ export const checkAuth = async (req, res) => {
 // Program for teacher verification
 
 export const verifyTeacher = async (req, res) => {
-    const {code} = req.body;
+	const { code } = req.body;
+    console.log("Verification code received:", code);
+	try {
+		const teacher = await Teacher.findOne({
+			verificationToken: code,
+			verificationTokenExpiresAt: { $gt: Date.now() },
+		});
 
-    try {
-        const teacher = await Teacher.findOne({
-            verificationToken: code,
-            verificationTokenExpiresAt: { $gt: Date.now() },
-        });
+		if (!teacher) {
+			return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+		}
 
-        if(!teacher)
-        {
-            return res.status(400).json({message: "Invalid or expired verification code"});
-        }
-        teacher.isVerified = true;
-        teacher.verificationToken = undefined;
-        teacher.verificationTokenExpiresAt = undefined;
-        await teacher.save();
+		teacher.isVerified = true;
+		teacher.verificationToken = undefined;
+		teacher.verificationTokenExpiresAt = undefined;
+		await teacher.save();
 
-        await sendWelcomeEmail(teacher.email, teacher.name);
-        res.status(200).json({
-            success:true,
-            message: "Teacher's mail is verified successfully",
-            teacher: {
-                ...teacher._doc,
-                password: undefined,
-            },
+		await sendWelcomeEmail(teacher.email);
 
-        })
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-}
+		res.status(200).json({
+			success: true,
+			message: "Email verified successfully",
+			user: {
+				...teacher._doc,
+				password: undefined,
+			},
+		});
+	} catch (error) {
+		console.log("error in verifyEmail ", error);
+		res.status(500).json({ success: false, message: "Server error" });
+	}
+};
 
 // program for teacher forgot password
 export const forgotPassword = async (req, res) => {
