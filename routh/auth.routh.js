@@ -20,7 +20,7 @@ router.get('/teacher-auth', verifyToken, checkAuth)
 //teacher registration and login and logout
 router.post('/teachersignup', registerTeacher);
 router.post('/teacherlogin', loginTeacher);
-router.post('teacherLogout', logoutTeacher);
+router.post('/teacherLogout', logoutTeacher);
 
 //teacher verificarion and password reset
 router.post('/resetpassword/:token', resetPassword);

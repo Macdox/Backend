@@ -1,4 +1,4 @@
-import bycryptjs from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import crypto from "crypto";
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/email.js';
@@ -17,13 +17,13 @@ export const registerTeacher = async (req, res) =>
             {
                 return res.status(400).json({message: "Please fill all fields"});
             }
-            const alredyExists = await Teacher.findOne({email});
-            if(alredyExists)
+            const alreadyExists = await Teacher.findOne({email});
+            if(alreadyExists)
             {
-                return res.status(400).json({ sucess:false, message: "teacher Already exists"});
+                return res.status(400).json({ success:false, message: "teacher Already exists"});
             }
 
-            const hasspassword = await bycryptjs.hash(password, 10);
+            const hashedPassword = await bcryptjs.hash(password, 10);
             const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
             
             if(password !== passwordConfirm)
@@ -32,10 +32,10 @@ export const registerTeacher = async (req, res) =>
             }
             const teacher = new Teacher({
                 email,
-                password: hasspassword,
-                passwordConfirm:hasspassword,
+                password: hashedPassword,
+                passwordConfirm: hashedPassword,
                 verificationToken,
-                verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24hrs 
+                verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24hrs 
             });
 
             await teacher.save();
@@ -71,7 +71,7 @@ export const loginTeacher = async (req, res) => {
         {
             return res.status(400).json({message: "Invalid credentials"});
         }
-        const isPasswordMatch = await bycryptjs.compare(password, teacher.password);
+        const isPasswordMatch = await bcryptjs.compare(password, teacher.password);
 
         if(!isPasswordMatch)
         {
@@ -119,11 +119,12 @@ export const verifyTeacher = async (req, res) => {
     console.log("Verification code received:", code);
 	try {
 		const teacher = await Teacher.findOne({
-			verificationToken: code,
-			verificationTokenExpiresAt: { $gt: Date.now() },
+			verificationToken:code,
+			verificationTokenExpiresAt: { $gt: Date.now() }, // Ensure this matches the field name in your database
 		});
 
 		if (!teacher) {
+			console.log("Teacher not found or verification token expired");
 			return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
 		}
 
@@ -143,7 +144,7 @@ export const verifyTeacher = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		console.log("error in verifyEmail ", error);
+		console.log("Error in verifyTeacher: ", error);
 		res.status(500).json({ success: false, message: "Server error" });
 	}
 };
@@ -160,10 +161,10 @@ export const forgotPassword = async (req, res) => {
 
 		// Generate reset token
 		const resetToken = crypto.randomBytes(20).toString("hex");
-		const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
+		const resetPasswordExpires = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
 		teacher.resetPasswordToken = resetToken;
-		teacher.resetPasswordExpiresAt = resetTokenExpiresAt;
+		teacher.resetPasswordExpires = resetPasswordExpires;
 
 		await teacher.save();
 
@@ -186,7 +187,7 @@ export const resetPassword = async (req, res) => {
 
 		const teacher = await Teacher.findOne({
 			resetPasswordToken: token,
-			resetPasswordExpiresAt: { $gt: Date.now() },
+			resetPasswordExpires: { $gt: Date.now() },
 		});
 
 		if (!teacher) {
@@ -198,7 +199,7 @@ export const resetPassword = async (req, res) => {
 
 		teacher.password = hashedPassword;
 		teacher.resetPasswordToken = undefined;
-		teacher.resetPasswordExpiresAt = undefined;
+		teacher.resetPasswordExpires = undefined;
 		await teacher.save();
 
 		await sendResetSuccessEmail(teacher.email);
