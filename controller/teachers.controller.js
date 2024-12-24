@@ -101,6 +101,7 @@ export const loginTeacher = async (req, res) => {
 export const checkAuth = async (req, res) => {
 	try {
 		const teacher = await Teacher.findById(req.userId).select("-password");
+		//console.log(teacher)
 		if (!teacher) {
 			return res.status(400).json({ success: false, message: "User not found" });
 		}
@@ -119,7 +120,7 @@ export const verifyTeacher = async (req, res) => {
     console.log("Verification code received:", code);
 	try {
 		const teacher = await Teacher.findOne({
-			verificationToken:code,
+			verificationToken: code,
 			verificationTokenExpiresAt: { $gt: Date.now() }, // Ensure this matches the field name in your database
 		});
 
@@ -127,6 +128,10 @@ export const verifyTeacher = async (req, res) => {
 			console.log("Teacher not found or verification token expired");
 			return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
 		}
+
+		console.log("Teacher found:", teacher);
+		console.log("Verification token:", teacher.verificationToken);
+		console.log("Verification token expires at:", teacher.verificationTokenExpiresAt);
 
 		teacher.isVerified = true;
 		teacher.verificationToken = undefined;
@@ -164,7 +169,7 @@ export const forgotPassword = async (req, res) => {
 		const resetPasswordExpires = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
 		teacher.resetPasswordToken = resetToken;
-		teacher.resetPasswordExpiresAT = resetPasswordExpires;
+		teacher.resetPasswordExpires = resetPasswordExpires;
 
 		await teacher.save();
 

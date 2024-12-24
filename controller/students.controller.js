@@ -206,3 +206,18 @@ export const studentResetPassword = async (req, res) => {
         res.status(400).json({ success: false, message: error.message });
     }
 };
+
+export const studenttAuth = async (req, res) => {
+	try {
+		const student = await Student.findById(req.userId).select("-password");
+		console.log(req.userId)
+		if (!student) {
+			return res.status(400).json({ success: false, message: "User not found" });
+		}
+
+		res.status(200).json({ success: true, student });
+	} catch (error) {
+		console.log("Error in checkAuth ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
+};

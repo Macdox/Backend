@@ -15,10 +15,15 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: false
 		},
-        Phone:{
-            type:Number,
-            requried:false,
-			size:10
+        phone: {
+            type: Number,
+            required: false,
+            validate: {
+                validator: function(v) {
+                    return v.toString().length === 10; // Ensure phone number is 10 digits
+                },
+                message: props => `${props.value} is not a valid phone number!`
+            }
         },
 		password: {
 			type: String,
@@ -36,11 +41,17 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		enrolledClasses: [{ 
+			type: mongoose.Schema.Types.ObjectId, 
+			ref: "Class" 
+		}],
 		resetPasswordToken: String,
 		resetPasswordExpiresAt: Date,
 		verificationToken: String,
 		verificationTokenExpiresAt: Date,
+		
 	},
+	
 	{ timestamps: true }
 );
 
