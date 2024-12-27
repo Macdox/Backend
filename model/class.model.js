@@ -15,29 +15,16 @@ const Classes = new mongoose.Schema(
             ref:"Teacher",
             required:true
         },
-        studentLinks:[{
-            link: { 
-                type: String, 
-                required: true 
-            },
-            expiresAt: { 
-                type: Date, 
-                required: true 
-            }, // Expiration timestamp
-            active: 
-            { 
-                type: Boolean, 
-                default: true 
-            }, // Link active status
-            redeemedAt: { 
-                type: Date 
-            }, // When the link was used
-            redeemedBy: { 
-                type: mongoose.Schema.Types.ObjectId, 
-                ref: "Student" 
+        studentLinks: [
+            {
+                link: { type: String, required: true },
+                expiresAt: { type: Date, required: true },
+                redeemedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' }
             }
-        }
         ],
+        subjectCode:{
+            type:String
+        },
         createdAt: { 
             type: Date, 
             default: Date.now 

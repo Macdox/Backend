@@ -42,8 +42,8 @@ const userSchema = new mongoose.Schema(
 			default: false,
 		},
 		enrolledClasses: [{ 
-			type: mongoose.Schema.Types.ObjectId, 
-			ref: "Class" 
+			type: mongoose.Schema.Types.String, 
+			ref: "Classes" 
 		}],
 		resetPasswordToken: String,
 		resetPasswordExpiresAt: Date,

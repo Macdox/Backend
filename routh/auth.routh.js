@@ -8,12 +8,12 @@ import {
     forgotPassword,
     verifyTeacher,
 } from '../controller/teachers.controller.js';
-import { authenticateTeacher } from '../middleware/authMiddleware.js';
 
 import { LoginStudent, LogoutStudent, SignupStudent, StudentForgotPassword, studentResetPassword, studenttAuth, VerifyStudent } from '../controller/students.controller.js';
 
-import { CreateClass, generateJoinLink } from '../controller/teacher.classes.controller.js';
+import { CreateClass, generateJoinLink  } from '../controller/teacher.classes.controller.js';
 import { verifyToken } from '../middleware/Verifytoken.js';
+import { join } from '../controller/student.classes.controller.js';
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.get('/student-auth', verifyToken,studenttAuth)
 //teacher registration and login and logout
 router.post('/teachersignup', registerTeacher);
 router.post('/teacherlogin', loginTeacher);
-router.post('/teacherLogout',authenticateTeacher, logoutTeacher);
+router.post('/teacherLogout', logoutTeacher);
 
 //teacher verificarion and password reset
 router.post('/resetpassword/:token',resetPassword);
@@ -35,9 +35,11 @@ router.post('/forgotpassword',forgotPassword);
 router.post('/verifyTeacher',verifyTeacher);
 
 
+
 // classes
 router.post('/create-class',verifyToken, CreateClass);
-router.post('/generate-link',verifyToken,generateJoinLink);
+router.post('/join/:token',verifyToken, join);
+router.post('/generate-join-link',verifyToken, generateJoinLink);
 
 // student register and login
 router.post('/studentSignup', SignupStudent);
