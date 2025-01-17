@@ -56,8 +56,11 @@ export const generateJoinLink = async (req, res) => {
   }
 };
 
+export const uploadFile = async (req, res) => {
+  try {
 
-
-
-
-
+  }
+  catch(error){
+    res.status(400).json({ success: false, message: error.message });
+  }
+}

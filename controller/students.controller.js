@@ -11,16 +11,17 @@ export const SignupStudent = async (req ,res) =>{
     const {name,LastName,email,password,passwordConfirm,Phone} = req.body;
     
     try {
-        if(!name ||!LastName|| !email || !password || !passwordConfirm || !Phone){
+        if(!email || !password || !passwordConfirm){
             return res.status(400).json({message:"All fields are required"});
         }
-        const alreadyExists = await Student.findOne({email,name});
+        const alreadyExists = await Student.findOne({email});
 
         if(alreadyExists)
         {
             return res.status(400).json({message:"Student already exists"});
         }
         const hashedPassword = await bcryptjs.hash(password, 10);
+        const hashedPasswordConfirm = await bcryptjs.hash(passwordConfirm, 10);
         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
         if(password !== passwordConfirm)
         {
@@ -32,7 +33,7 @@ export const SignupStudent = async (req ,res) =>{
             LastName,
             email,
             password: hashedPassword,
-            passwordConfirm: hashedPassword,
+            passwordConfirm: hashedPasswordConfirm,
             Phone,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24hrs
@@ -107,16 +108,12 @@ export const LoginStudent = async (req, res) => {
             return res.status(400).json({message: "Invalid credentials"});
         }
         const isPasswordMatch = await bcryptjs.compare(password, student.password);
-
+        console.log(isPasswordMatch);
         if(!isPasswordMatch)
         {
-            return res.status(400).json({message: "Invalid credentials"});
+            return res.status(400).json({message: "Password Does Not Match"});
         }
         const verified = student.isVerified;
-        if(!verified)
-        {
-            return res.status(400).json({message: "User not verified"});
-        }
 
         generateTokenAndSetCookie(res, student._id);
 
@@ -211,8 +208,10 @@ export const studenttAuth = async (req, res) => {
 	try {
 		const student = await Student.findById(req.userId).select("-password");
 		console.log(req.userId)
+        console.log(student)
 		if (!student) {
 			return res.status(400).json({ success: false, message: "User not found" });
+            console.log(student)
 		}
 
 		res.status(200).json({ success: true, student });
