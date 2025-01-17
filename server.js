@@ -4,6 +4,7 @@ import connectDB  from './db/database.js';
 import cors from "cors";
 import router from './routh/auth.routh.js';
 import cookieParser from 'cookie-parser';
+import teacherRouter from './routh/Teacher.routh.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/v1', router);
+app.use('/api/v1', teacherRouter);
 
 app.listen(PORT,()=>{
     connectDB();

@@ -1,5 +1,8 @@
 import { classes } from "../model/class.model.js";
 import jwt from "jsonwebtoken";
+import express from "express";
+
+
 
 //class creation
 export const CreateClass = async (req, res) => {
@@ -57,8 +60,10 @@ export const generateJoinLink = async (req, res) => {
 };
 
 export const uploadFile = async (req, res) => {
-  try {
+  const { subjectname, file } = req.body;
 
+  try {
+    console.log("req.body",req.body);
   }
   catch(error){
     res.status(400).json({ success: false, message: error.message });
