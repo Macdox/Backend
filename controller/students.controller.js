@@ -59,40 +59,38 @@ export const SignupStudent = async (req ,res) =>{
 
 //Student verification
 
-export const VerifyStudent = async (req,res) => {
-    const {code} = req.body;
+    export const VerifyStudent = async (req,res) => {
+        const {code} = req.body;
 
-    try {
-        const student = await Student.findOne({
-            verificationToken: code,
-            verificationTokenExpiresAt: { $gt: Date.now() },
-        });
-        if(!student)
+        try {
+            const student = await Student.findOne({
+                verificationToken: code,
+                verificationTokenExpiresAt: { $gt: Date.now() },
+            });
+            const email = student.email;
+            res.send(email)
+            if(!student)
+            {
+                return res.status(400).json({message:"Invalid or expired verification code"});
+            }
+
+            student.isVerified = true;
+            student.verificationToken = undefined;
+            student.verificationTokenExpiresAt = undefined;
+            await student.save();
+
+            sendWelcomeEmail(email, student.name);
+
+            res.status(200).json({
+                success: true,
+                message: "Email verified successfully",
+            });
+        } 
+        catch (error) 
         {
-            return res.status(400).json({message:"Invalid or expired verification code"});
+            res.status(500).json({ success: false, message: "Server error" });
         }
-
-        student.isVerified = true;
-        student.verificationToken = undefined;
-        student.verificationTokenExpiresAt = undefined;
-        await student.save();
-
-        sendWelcomeEmail(student.email, student.name);
-
-        res.status(200).json({
-			success: true,
-			message: "Email verified successfully",
-			user: {
-				...student._doc,
-				password: undefined,
-			},
-		});
-    } 
-    catch (error) 
-    {
-        res.status(500).json({ success: false, message: "Server error" });
     }
-}
 
 
 //Student Login
@@ -108,13 +106,13 @@ export const LoginStudent = async (req, res) => {
             return res.status(400).json({message: "Invalid credentials"});
         }
         const isPasswordMatch = await bcryptjs.compare(password, student.password);
-        console.log(isPasswordMatch);
+        //console.log("password:",isPasswordMatch);
         if(!isPasswordMatch)
         {
             return res.status(400).json({message: "Password Does Not Match"});
         }
         const verified = student.isVerified;
-
+        //console.log("verified:",verified);
         generateTokenAndSetCookie(res, student._id);
 
         student.lastLogin = new Date();
@@ -165,7 +163,7 @@ export const StudentForgotPassword = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Password reset link sent to your email" });
     } catch (error) {
-        console.log("Error in forgotPassword ", error);
+        //console.log("Error in forgotPassword ", error);
         res.status(400).json({ success: false, message: error.message });
     }
 };
@@ -207,16 +205,16 @@ export const studentResetPassword = async (req, res) => {
 export const studenttAuth = async (req, res) => {
 	try {
 		const student = await Student.findById(req.userId).select("-password");
-		console.log(req.userId)
-        console.log(student)
+		//console.log(req.userId)
+        //console.log(student)
 		if (!student) {
 			return res.status(400).json({ success: false, message: "User not found" });
-            console.log(student)
+            //console.log(student)
 		}
 
 		res.status(200).json({ success: true, student });
 	} catch (error) {
-		console.log("Error in checkAuth ", error);
+		//console.log("Error in checkAuth ", error);
 		res.status(400).json({ success: false, message: error.message });
 	}
 };
