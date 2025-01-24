@@ -25,6 +25,15 @@ const Classes = new mongoose.Schema(
         subjectCode:{
             type:String
         },
+        file: [
+            {
+                file: { type: String, required: true },
+                lectureTitle: { type: String, required: true },
+            }
+        ],
+		url: {
+			type: String,
+		},
         createdAt: { 
             type: Date, 
             default: Date.now 
