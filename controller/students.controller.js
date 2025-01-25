@@ -59,7 +59,7 @@ export const SignupStudent = async (req ,res) =>{
 
 //Student verification
 
-    export const VerifyStudent = async (req,res) => {
+export const VerifyStudent = async (req,res) => {
         const {code} = req.body;
 
         try {
@@ -90,8 +90,7 @@ export const SignupStudent = async (req ,res) =>{
         {
             res.status(500).json({ success: false, message: "Server error" });
         }
-    }
-
+}
 
 //Student Login
 
@@ -169,7 +168,6 @@ export const StudentForgotPassword = async (req, res) => {
 };
 
 //student reset password
-
 
 export const studentResetPassword = async (req, res) => {
     try {

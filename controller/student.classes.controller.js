@@ -52,3 +52,20 @@ export const join = async (req, res) => {
     res.status(400).json({ message: "Invalid or expired link" });
   }
 };
+
+export const getStudentClasses = async (req, res) => {
+  try {
+    const student = await Student.findById(req.userId).populate('enrolledClasses');
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    const enrolledId = student.enrolledClasses;
+    const enrolledClasses = await classes.find({ _id: { $in: enrolledId } }, 'subjectname');
+    res.status(200).json({ enrolledClasses: enrolledClasses.map(cls => cls.subjectname) });
+    console.log("Enrolled classes:", enrolledClasses);
+    // Removed the console.log statement to avoid duplicate outputs
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get classes" });
+  }
+};

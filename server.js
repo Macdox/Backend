@@ -1,11 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import connectDB  from './db/database.js';
+import connectDB from './db/database.js';
 import cors from "cors";
 import router from './routh/auth.routh.js';
 import cookieParser from 'cookie-parser';
 import teacherRouter from './routh/Teacher.routh.js';
-
+import Studentrouter from './routh/Student.js';
 const app = express();
 
 dotenv.config();
@@ -18,8 +18,9 @@ app.use(cookieParser());
 
 app.use('/api/v1', router);
 app.use('/api/v1', teacherRouter);
+app.use('/api/v1', Studentrouter);
 
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
     connectDB();
     console.log(`Server is running on port ${PORT}`);
-})
+});
