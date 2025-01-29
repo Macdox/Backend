@@ -32,7 +32,8 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.post('/api/v1/', (req, res) => {
-    generateTokenAndSetCookie(res, '1234567890');
+    console.log("Hello");
+    console.log(req.cookies);
 });
 
 app.listen(PORT, () => {
