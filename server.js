@@ -31,7 +31,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.post('/', (req, res) => {
+app.post('/api/v1/', (req, res) => {
     generateTokenAndSetCookie(res, '1234567890');
 });
 
