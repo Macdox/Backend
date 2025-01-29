@@ -6,6 +6,7 @@ import router from './routh/auth.routh.js';
 import cookieParser from 'cookie-parser';
 import teacherRouter from './routh/Teacher.routh.js';
 import Studentrouter from './routh/Student.js';
+import { generateTokenAndSetCookie } from './utils/token.js';
 const app = express();
 
 dotenv.config();
@@ -29,6 +30,10 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
+
+app.get('/', (req, res) => {
+    generateTokenAndSetCookie(res, '1234567890');
+});
 
 app.listen(PORT, () => {
     connectDB();
