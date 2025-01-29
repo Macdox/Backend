@@ -5,6 +5,8 @@ export const verifyToken = (req, res, next) => {
   console.log("Authorization Header:", req.headers.authorization);
 
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+  console.log("Extracted Token:", token);
+
   if (!token) {
     return res.status(403).json({ message: "No token provided" });
   }
