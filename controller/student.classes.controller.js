@@ -1,16 +1,17 @@
 import jwt from "jsonwebtoken";
 import { classes } from "../model/class.model.js";
 import { Student } from "../model/student.model.js";
+import s3 from "../db/CloudStorage.js";
 
 export const join = async (req, res) => {
   const { token } = req.params;
   const studentId = req.userId; // Extracted from JWT
-  console.log("Student ID:", studentId);
-  console.log("Token:", token);
+  //console.log("Student ID:", studentId);
+  //console.log("Token:", token);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded:", decoded);
+    //console.log("Decoded:", decoded);
     // Check expiration
     if (Date.now() > decoded.expiresAt) {
       return res.status(400).json({ message: "Link has expired" });
@@ -28,13 +29,15 @@ export const join = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const classToJoin = await classes.findOne({ subjectname: foundClass.subjectname }); // Replace 'name' with an actual identifier
-    console.log("Class to join:", classToJoin._id);
+    const classToJoin = await classes.findOne({
+      subjectname: foundClass.subjectname,
+    }); // Replace 'name' with an actual identifier
+    //console.log("Class to join:", classToJoin._id);
     if (!classToJoin) {
-    return res.status(404).json({ message: "Class not found" });
+      return res.status(404).json({ message: "Class not found" });
     }
-// Push the ObjectId to the student's enrolledClasses
-    
+    // Push the ObjectId to the student's enrolledClasses
+
     // Add class ID to enrolledClasses if not already enrolled
     if (!student.enrolledClasses.includes(foundClass.subjectname)) {
       student.enrolledClasses.push(classToJoin._id);
@@ -55,17 +58,95 @@ export const join = async (req, res) => {
 
 export const getStudentClasses = async (req, res) => {
   try {
-    const student = await Student.findById(req.userId).populate('enrolledClasses');
+    const student = await Student.findById(req.userId).populate(
+      "enrolledClasses"
+    );
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-    const enrolledId = student.enrolledClasses;
-    const enrolledClasses = await classes.find({ _id: { $in: enrolledId } }, 'subjectname');
-    res.status(200).json({ enrolledClasses: enrolledClasses.map(cls => cls.subjectname) });
-    console.log("Enrolled classes:", enrolledClasses);
-    // Removed the console.log statement to avoid duplicate outputs
+    const watchedVideos = student.watchedVideos;
+    const enrolledClasses = await classes.find({
+      _id: { $in: student.enrolledClasses },
+    });
+      
+    //console.log("Class names:", classNames);
+    res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to get classes" });
+  }
+};
+
+export const getclasscontent = async (req, res) => {
+  const { id } = req.params;
+  const studentId = req.userId;
+  //console.log("Class ID:", id);
+  try {
+    const findclass = await classes.findById(id);
+    const lectureTitles = findclass.file.map((f) => f.lectureTitle);
+    const fileNames = findclass.file.map((f) => f.file);
+    res.status(200).json({ success: true, lectureTitles, fileNames});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to get classes" });
+  }
+};
+
+export const fetchVideo = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findclass = await classes.findOne({ "file.file": id });
+    if (!findclass) {
+      return res.status(404).json({ message: "File not found" });
+    }
+    const fileDetails = findclass.file.find(f => f.file === id);
+    const lectureTitle = fileDetails.lectureTitle;
+
+    const params = {
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: id,
+      Expires: 3600, // Set expires here
+      ResponseContentDisposition: "inline", // Ensure the video is displayed inline
+      ResponseContentType: "video/mp4",
+    };
+
+    const url = s3.getSignedUrl("getObject", params);
+     
+    res.status(200).json({ url, lectureTitle });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch video" });
+  }
+};
+
+export const updateWatchedStatus = async (req, res) => {
+  const { videoId } = req.body;
+  console.log("Video ID:", videoId);
+  const studentId = req.userId;
+  try {
+    const student = await Student.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const findclass = await classes.findOne({ "file.file": videoId });
+    if (!findclass) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const fileDetails = findclass.file.find(f => f.file === videoId);
+    if (!fileDetails) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
+    if (!student.watchedVideos.includes(videoId)) {
+      student.watchedVideos.push(videoId);
+      await student.save();
+    }
+
+    res.status(200).json({ message: "Watched status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update watched status" });
   }
 };

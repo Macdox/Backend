@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
 
+const fileSchema = new mongoose.Schema({
+  file: { type: String, required: true },
+  lectureTitle: { type: String, required: true },
+});
+
 const Classes = new mongoose.Schema(
     {
         subjectname: {
@@ -25,12 +30,7 @@ const Classes = new mongoose.Schema(
         subjectCode:{
             type:String
         },
-        file: [
-            {
-                file: { type: String, required: true },
-                lectureTitle: { type: String, required: true },
-            }
-        ],
+        file: [fileSchema],
 		url: {
 			type: String,
 		},

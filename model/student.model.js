@@ -6,6 +6,13 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			unique: true,
+			validate: {
+				validator: function (value) {
+				  // Simple email regex for validation
+				  return /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(value);
+				},
+				message: "Please provide a valid email address.",
+			  },
 		},
         name:{
             type: String,
@@ -18,12 +25,13 @@ const userSchema = new mongoose.Schema(
         phone: {
             type: Number,
             required: false,
-            validate: {
-                validator: function(v) {
-                    return v.toString().length === 10; // Ensure phone number is 10 digits
-                },
-                message: props => `${props.value} is not a valid phone number!`
-            }
+
+			validate: {
+				validator: function(value) {
+				  return /^\d{10}$/.test(value); s
+				},
+				message: 'Contact number must be exactly 10 digits long.'
+			  },
         },
 		password: {
 			type: String,
@@ -45,11 +53,26 @@ const userSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.String, 
 			ref: "Classes" 
 		}],
+		Firstname: {
+			type: String,
+			required: true
+		},
+		Lastname: {
+			type: String,
+			required: true
+		},
+		Phone:{
+			type: Number,
+			required: true
+		},
 		resetPasswordToken: String,
 		resetPasswordExpiresAt: Date,
 		verificationToken: String,
 		verificationTokenExpiresAt: Date,
-		
+		watchedVideos: {
+			type: [String],
+			default: [],
+		},
 	},
 	
 	{ timestamps: true }

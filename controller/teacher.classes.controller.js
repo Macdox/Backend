@@ -33,13 +33,22 @@ export const generateJoinLink = async (req, res) => {
         const foundClass = await classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
 
-        const expiresAt = Date.now() + expirationHours * 60 * 60 * 1000;
-        const token = jwt.sign({ subjectname, expiresAt }, process.env.JWT_SECRET);
+        // Calculate expiration time for the link (in milliseconds)
+        const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000);
+
+        // Create JWT token with expiration details
+        const token = jwt.sign({ subjectname, expiresAt: expiresAt.getTime() }, process.env.JWT_SECRET);
+
+        // Create the join link
         const link = `https://localhost:8000/api/v1/join/${token}`;
 
-        foundClass.studentLinks.push({ link, expiresAt: new Date(expiresAt) });
+        // Log link to verify
+        //console.log("Generated Link:", link);
+
+        foundClass.studentLinks.push({ link, expiresAt });
         await foundClass.save();
 
+        // Respond with the generated link
         res.status(201).json({ message: "Join link generated", link });
     } catch (error) {
         console.error(error);
@@ -54,7 +63,7 @@ export const uploadLecture = async (req, res) =>
     const file = req.file;
     const teacherId = req.userId;
     //console.log(subjectname, lectureTitle);
-    console.log(teacherId);
+    //console.log(teacherId);
     if(!subjectname || !lectureTitle)
     {
         return res.status(400).json({message:"Please fill in all fields"});

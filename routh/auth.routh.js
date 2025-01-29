@@ -38,7 +38,7 @@ router.post('/verifyTeacher',verifyTeacher);
 
 // classes
 router.post('/create-class',verifyToken, CreateClass);
-router.post('/join/:token',verifyToken, join);
+router.get('/join/:token', verifyToken, join);
 router.post('/generate-join-link',verifyToken, generateJoinLink);
 
 // student register and login
