@@ -12,7 +12,7 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "https://spiro-rq2g.onrender.com/", credentials: true }));
+app.use(cors({ origin: "https://spiro-rq2g.onrender.com", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
