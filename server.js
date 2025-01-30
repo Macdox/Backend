@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import teacherRouter from './routh/Teacher.routh.js';
 import Studentrouter from './routh/Student.js';
 import path from 'path';
+import morgan from 'morgan';
 
 const app = express();
 
@@ -20,6 +21,10 @@ app.use(cors({
 }));
 app.use(cookieParser());
 app.use(express.json());
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 app.use('/api/v1', router);
 app.use('/api/v1', teacherRouter);
