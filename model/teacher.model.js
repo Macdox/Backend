@@ -5,7 +5,6 @@ const teacherSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       trim: true,
     },
     email: {
@@ -41,21 +40,6 @@ const teacherSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index email for faster queries
-teacherSchema.index({ email: 1 });
-
-// Hash password before saving
-teacherSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
 
 const Teacher = mongoose.model("Teacher", teacherSchema);
 export default Teacher;

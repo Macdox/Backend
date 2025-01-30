@@ -7,9 +7,8 @@ const fileSchema = new mongoose.Schema({
 
 const classesSchema = new mongoose.Schema(
   {
-    subjectName: {
+    subjectname: {
       type: String,
-      required: true,
       trim: true, // Removes extra spaces
     },
     description: {

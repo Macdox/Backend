@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import dotenv from 'dotenv';
-import '../models/Classes.js'; // Import the Classes model to register the schema
 
 dotenv.config();
 
