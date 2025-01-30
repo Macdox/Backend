@@ -1,5 +1,5 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   registerTeacher,
   loginTeacher,
   checkAuth,
@@ -7,9 +7,9 @@ const {
   resetPassword,
   forgotPassword,
   verifyTeacher,
-} = require("../controller/teachers.controller.js");
+} from "../controller/teachers.controller.js";
 
-const {
+import {
   LoginStudent,
   LogoutStudent,
   SignupStudent,
@@ -17,15 +17,15 @@ const {
   studentResetPassword,
   studentAuth,
   VerifyStudent,
-} = require("../controller/students.controller.js");
+} from "../controller/students.controller.js";
 
-const {
+import {
   CreateClass,
   generateJoinLink,
-} = require("../controller/teacher.classes.controller.js");
+} from "../controller/teacher.classes.controller.js";
 
-const { verifyToken } = require("../middleware/Verifytoken.js");
-const { join } = require("../controller/student.classes.controller.js");
+import { verifyToken } from "../middleware/Verifytoken.js";
+import { join } from "../controller/student.classes.controller.js";
 
 const router = express.Router();
 
@@ -59,4 +59,4 @@ router.post("/studentForgetpassword", StudentForgotPassword);
 router.post("/studentResetpassword/:token", studentResetPassword);
 
 // Export router
-module.exports = router;
+export default router;

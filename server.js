@@ -1,12 +1,12 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const connectDB = require('./db/database');
-const cors = require('cors');
-const router = require('./routh/auth.routh.js');
-const cookieParser = require('cookie-parser');
-const teacherRouter = require('./routh/Teacher.routh.js');
-const Studentrouter = require('./routh/Student.js');
-const { generateTokenAndSetCookie } = require('./utils/token.js');
+import express from 'express';
+import dotenv from 'dotenv';
+import connectDB from './db/database.js';
+import cors from 'cors';
+import router from './routh/auth.routh.js';
+import cookieParser from 'cookie-parser';
+import teacherRouter from './routh/Teacher.routh.js';
+import Studentrouter from './routh/Student.js';
+import { generateTokenAndSetCookie } from './utils/token.js';
 
 const app = express();
 

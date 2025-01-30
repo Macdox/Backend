@@ -1,5 +1,5 @@
-const { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } = require("./templates.js");
-const { mailtrapClient, sender } = require("./mail.config.js");
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE } from "./templates.js";
+import { mailtrapClient, sender } from "./mail.config.js";
 
 const sendVerificationEmail = async (email, verificationToken) => {
     const recipient = [{ email }];
@@ -81,7 +81,7 @@ const sendResetSuccessEmail = async (email) => {
     }
 };
 
-module.exports = {
+export {
     sendVerificationEmail,
     sendWelcomeEmail,
     sendPasswordResetEmail,

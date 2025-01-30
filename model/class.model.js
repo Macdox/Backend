@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const fileSchema = new mongoose.Schema({
   file: { type: String, required: true },
@@ -57,4 +57,4 @@ const classesSchema = new mongoose.Schema(
 );
 
 const classes = mongoose.model("classes", classesSchema);
-module.exports = classes;
+export { classes };

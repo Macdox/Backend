@@ -1,7 +1,7 @@
-const jwt = require("jsonwebtoken");
-const { classes } = require("../model/class.model.js");
-const { Student } = require("../model/student.model.js");
-const s3 = require("../db/CloudStorage.js");
+import jwt from "jsonwebtoken";
+import { classes } from "../model/class.model.js";
+import { Student } from "../model/student.model.js";
+import s3 from "../db/CloudStorage.js";
 
 const join = async (req, res) => {
   const { token } = req.params;
@@ -138,7 +138,7 @@ const updateWatchedStatus = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   join,
   getStudentClasses,
   getclasscontent,

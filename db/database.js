@@ -1,14 +1,22 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import dotenv from 'dotenv';
+import '../models/Classes.js'; // Import the Classes model to register the schema
+
+dotenv.config();
 
 const connectDB = async () => {
     try{
         console.log("Connecting to database...");
-        const conection = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`Database connected: ${conection.connection.host}`);
+        const connection = await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log(`Database connected: ${connection.connection.host}`);
     }
     catch(error){
-        console.error(`Error in conection of database: ${error.message}`);
+        console.error(`Error in connection of database: ${error.message}`);
         process.exit(1);
     }
 };
-module.exports = connectDB;
+
+export default connectDB;

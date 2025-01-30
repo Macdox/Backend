@@ -1,7 +1,7 @@
-const s3 = require("../db/CloudStorage.js");
-const crypto = require('crypto');
-const { classes } = require("../model/class.model.js");
-const jwt = require("jsonwebtoken");
+import s3 from "../db/CloudStorage.js";
+import crypto from 'crypto';
+import { classes } from "../model/class.model.js";
+import jwt from "jsonwebtoken";
 
 // Class creation
 const CreateClass = async (req, res) => {
@@ -85,7 +85,7 @@ const uploadLecture = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     CreateClass,
     generateJoinLink,
     uploadLecture,

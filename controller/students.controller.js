@@ -1,8 +1,8 @@
-const bcryptjs = require('bcryptjs');
-const crypto = require('crypto');
-const { generateTokenAndSetCookie } = require('../utils/token.js');
-const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } = require('../mailtrap/email.js');
-const { Student } = require('../model/student.model.js');
+import bcryptjs from 'bcryptjs';
+import crypto from 'crypto';
+import { generateTokenAndSetCookie } from '../utils/token.js';
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/email.js';
+import { Student } from '../model/student.model.js';
 
 // Student registration
 const SignupStudent = async (req, res) => {
@@ -187,7 +187,7 @@ const studentAuth = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     SignupStudent,
     VerifyStudent,
     LoginStudent,

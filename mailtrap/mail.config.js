@@ -1,5 +1,5 @@
-const { MailtrapClient } = require("mailtrap");
-const dotenv = require("dotenv");
+import { MailtrapClient } from "mailtrap";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -13,4 +13,4 @@ const sender = {
   name: "Spiro",
 };
 
-module.exports = { mailtrapClient, sender };
+export { mailtrapClient, sender };

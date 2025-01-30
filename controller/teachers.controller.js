@@ -1,9 +1,8 @@
-const bcryptjs = require('bcryptjs');
-const crypto = require("crypto");
-const { generateTokenAndSetCookie } = require('../utils/token.js');
-const { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } = require('../mailtrap/email.js');
-
-const { Teacher } = require('../model/teacher.model.js');
+import bcryptjs from 'bcryptjs';
+import crypto from "crypto";
+import { generateTokenAndSetCookie } from '../utils/token.js';
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/email.js';
+import Teacher from '../model/teacher.model.js';
 
 // program for Teacher registration
 const registerTeacher = async (req, res) => {
@@ -194,7 +193,7 @@ const logoutTeacher = async (req, res) => {
     res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-module.exports = {
+export {
     registerTeacher,
     loginTeacher,
     checkAuth,

@@ -1,16 +1,14 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: true,
       trim: true, // Removes extra spaces
     },
     lastName: {
       type: String,
-      required: true,
       trim: true,
     },
     email: {
@@ -22,7 +20,6 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String, // Using String instead of Number for international formats
-      required: true,
       trim: true,
     },
     password: {
@@ -56,9 +53,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Index email for fast lookups
-userSchema.index({ email: 1 });
-
 // Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -72,5 +66,5 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-const Student = mongoose.model("Student", userSchema);
-module.exports = Student;
+export const Student = mongoose.model("Student", userSchema);
+export default Student;
