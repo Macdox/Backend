@@ -17,7 +17,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'https://spiroedu.live', // Your frontend domain
+  origin: 'https://spiro-pi.vercel.app', // Your frontend domain
   credentials: true
 }));
 
