@@ -14,7 +14,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'https://spiro-rq2g.onrender.com', // Your frontend domain
+  origin: 'http://spiroedu.live/', // Your frontend domain
   credentials: true
 }));
 
