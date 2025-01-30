@@ -1,26 +1,20 @@
-import jwt from "jsonwebtoken";
-import { classes } from "../model/class.model.js";
-import { Student } from "../model/student.model.js";
-import s3 from "../db/CloudStorage.js";
+const jwt = require("jsonwebtoken");
+const { classes } = require("../model/class.model.js");
+const { Student } = require("../model/student.model.js");
+const s3 = require("../db/CloudStorage.js");
 
-export const join = async (req, res) => {
+const join = async (req, res) => {
   const { token } = req.params;
   const studentId = req.userId; // Extracted from JWT
-  //console.log("Student ID:", studentId);
-  //console.log("Token:", token);
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    //console.log("Decoded:", decoded);
-    // Check expiration
     if (Date.now() > decoded.expiresAt) {
       return res.status(400).json({ message: "Link has expired" });
     }
-    // Check if the class exists
+
     const foundClass = await classes.findOne({
       subjectname: decoded.subjectname,
     });
-    //console.log("Found class:", foundClass);
     if (!foundClass)
       return res.status(404).json({ message: "Class not found" });
 
@@ -31,14 +25,11 @@ export const join = async (req, res) => {
 
     const classToJoin = await classes.findOne({
       subjectname: foundClass.subjectname,
-    }); // Replace 'name' with an actual identifier
-    //console.log("Class to join:", classToJoin._id);
+    });
     if (!classToJoin) {
       return res.status(404).json({ message: "Class not found" });
     }
-    // Push the ObjectId to the student's enrolledClasses
 
-    // Add class ID to enrolledClasses if not already enrolled
     if (!student.enrolledClasses.includes(foundClass.subjectname)) {
       student.enrolledClasses.push(classToJoin._id);
       await student.save();
@@ -56,7 +47,7 @@ export const join = async (req, res) => {
   }
 };
 
-export const getStudentClasses = async (req, res) => {
+const getStudentClasses = async (req, res) => {
   try {
     const student = await Student.findById(req.userId).populate(
       "enrolledClasses"
@@ -68,8 +59,7 @@ export const getStudentClasses = async (req, res) => {
     const enrolledClasses = await classes.find({
       _id: { $in: student.enrolledClasses },
     });
-      
-    //console.log("Class names:", classNames);
+
     res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {
     console.error(error);
@@ -77,22 +67,20 @@ export const getStudentClasses = async (req, res) => {
   }
 };
 
-export const getclasscontent = async (req, res) => {
+const getclasscontent = async (req, res) => {
   const { id } = req.params;
-  const studentId = req.userId;
-  //console.log("Class ID:", id);
   try {
     const findclass = await classes.findById(id);
     const lectureTitles = findclass.file.map((f) => f.lectureTitle);
     const fileNames = findclass.file.map((f) => f.file);
-    res.status(200).json({ success: true, lectureTitles, fileNames});
+    res.status(200).json({ success: true, lectureTitles, fileNames });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to get classes" });
   }
 };
 
-export const fetchVideo = async (req, res) => {
+const fetchVideo = async (req, res) => {
   const { id } = req.params;
   try {
     const findclass = await classes.findOne({ "file.file": id });
@@ -119,9 +107,8 @@ export const fetchVideo = async (req, res) => {
   }
 };
 
-export const updateWatchedStatus = async (req, res) => {
+const updateWatchedStatus = async (req, res) => {
   const { videoId } = req.body;
-  console.log("Video ID:", videoId);
   const studentId = req.userId;
   try {
     const student = await Student.findById(studentId);
@@ -149,4 +136,12 @@ export const updateWatchedStatus = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Failed to update watched status" });
   }
+};
+
+module.exports = {
+  join,
+  getStudentClasses,
+  getclasscontent,
+  fetchVideo,
+  updateWatchedStatus,
 };

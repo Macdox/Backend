@@ -1,10 +1,10 @@
-import s3 from "../db/CloudStorage.js";
-import crypto from 'crypto';
-import { classes } from "../model/class.model.js";
-import jwt from "jsonwebtoken";
+const s3 = require("../db/CloudStorage.js");
+const crypto = require('crypto');
+const { classes } = require("../model/class.model.js");
+const jwt = require("jsonwebtoken");
 
 // Class creation
-export const CreateClass = async (req, res) => {
+const CreateClass = async (req, res) => {
     const { subjectname, description } = req.body;
     const teacherId = req.userId;
     try {
@@ -25,7 +25,7 @@ export const CreateClass = async (req, res) => {
     }
 };
 
-export const generateJoinLink = async (req, res) => {
+const generateJoinLink = async (req, res) => {
     try {
         const { subjectname, expirationHours } = req.body;
         const teacherId = req.userId;
@@ -33,22 +33,15 @@ export const generateJoinLink = async (req, res) => {
         const foundClass = await classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
 
-        // Calculate expiration time for the link (in milliseconds)
         const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000);
 
-        // Create JWT token with expiration details
         const token = jwt.sign({ subjectname, expiresAt: expiresAt.getTime() }, process.env.JWT_SECRET);
 
-        // Create the join link
         const link = `https://localhost:8000/api/v1/join/${token}`;
-
-        // Log link to verify
-        //console.log("Generated Link:", link);
 
         foundClass.studentLinks.push({ link, expiresAt });
         await foundClass.save();
 
-        // Respond with the generated link
         res.status(201).json({ message: "Join link generated", link });
     } catch (error) {
         console.error(error);
@@ -56,25 +49,20 @@ export const generateJoinLink = async (req, res) => {
     }
 };
 
-export const uploadLecture = async (req, res) =>
-{
-    const ImgName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex")+ ".mp4";
+const uploadLecture = async (req, res) => {
+    const ImgName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".mp4";
     const { subjectname, lectureTitle } = req.body;
     const file = req.file;
     const teacherId = req.userId;
-    //console.log(subjectname, lectureTitle);
-    //console.log(teacherId);
-    if(!subjectname || !lectureTitle)
-    {
-        return res.status(400).json({message:"Please fill in all fields"});
+
+    if (!subjectname || !lectureTitle) {
+        return res.status(400).json({ message: "Please fill in all fields" });
     }
-    if(!file)
-    {
-        return res.status(400).json({message:"Please upload a file"});
+    if (!file) {
+        return res.status(400).json({ message: "Please upload a file" });
     }
     try {
         const files = file.buffer;
-        //console.log(files);
         const foundClass = await classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
         const fileName = ImgName();
@@ -92,9 +80,13 @@ export const uploadLecture = async (req, res) =>
                 res.status(200).send("File uploaded successfully");
             }
         });
-        
     } catch (error) {
         res.status(500).json({ message: "Failed to upload file", error: error.message });
     }
+};
 
-}
+module.exports = {
+    CreateClass,
+    generateJoinLink,
+    uploadLecture,
+};
