@@ -16,7 +16,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: process.env.CLIENT_URL, // Ensure this environment variable is set to your frontend domain
+  origin: "https://spiro-pi.vercel.app", // Ensure this environment variable is set to your frontend domain
   withCredentials: true
 }));
 app.use(cookieParser());
