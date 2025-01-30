@@ -71,8 +71,15 @@ const getclasscontent = async (req, res) => {
   const { id } = req.params;
   try {
     const findclass = await Classes.findById(id);
-    const lectureTitles = findclass.file.map((f) => f.lectureTitle);
-    const fileNames = findclass.file.map((f) => f.file);
+    if (!findclass) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    // Ensure findclass.file is an array
+    const files = Array.isArray(findclass.file) ? findclass.file : [];
+
+    const lectureTitles = files.map((f) => f.lectureTitle);
+    const fileNames = files.map((f) => f.file);
     res.status(200).json({ success: true, lectureTitles, fileNames });
   } catch (error) {
     console.error(error);
