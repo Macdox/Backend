@@ -7,6 +7,9 @@ import cookieParser from 'cookie-parser';
 import teacherRouter from './routh/Teacher.routh.js';
 import Studentrouter from './routh/Student.js';
 import { generateTokenAndSetCookie } from './utils/token.js';
+import path from 'path';
+
+
 const app = express();
 
 dotenv.config();
@@ -18,7 +21,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.options('*', cors());
+if (process.env.NODE_ENV === "production") {
+	app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
+	app.get("*", (req, res) => {
+		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+	});
+}
 
 app.use(cookieParser());
 app.use(express.json());
