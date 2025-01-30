@@ -8,7 +8,7 @@ import { Student } from '../model/student.model.js';
 
 //Student registration 
 export const SignupStudent = async (req ,res) =>{
-    const {name,LastName,email,password,passwordConfirm,Phone} = req.body;
+    const {email,password,passwordConfirm,} = eq.body;
     
     try {
         if(!email || !password || !passwordConfirm){
