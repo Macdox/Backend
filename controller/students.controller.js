@@ -54,9 +54,6 @@ export const SignupStudent = async (req ,res) =>{
 
     } 
     catch (error) {
-        if (err.name === 'ValidationError') {
-            return res.status(400).json({ error: err.errors.contactNumber ? err.errors.contactNumber.message : err.errors.email.message });
-          }
         res.status(400).json({ success: false, message: error.message });
     }
 }
@@ -117,7 +114,7 @@ export const LoginStudent = async (req, res) => {
         const verified = student.isVerified;
         //console.log("verified:",verified);
         generateTokenAndSetCookie(res, student._id);
-        
+
 
         student.lastLogin = new Date();
         await student.save();
