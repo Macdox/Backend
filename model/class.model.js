@@ -1,9 +1,5 @@
 import mongoose from "mongoose";
 
-const fileSchema = new mongoose.Schema({
-  file: { type: String, required: true },
-  lectureTitle: { type: String, required: true },
-});
 
 const classesSchema = new mongoose.Schema(
   {
@@ -36,7 +32,10 @@ const classesSchema = new mongoose.Schema(
       uppercase: true, // Converts to uppercase for consistency
       trim: true,
     },
-    files: [fileSchema], // Renamed from `file` to `files` (more intuitive)
+    files: {
+      file: { type: String, required: true },
+  lectureTitle: { type: String, required: true },
+    }, // Renamed from `file` to `files` (more intuitive)
     url: {
       type: String,
       trim: true,
@@ -55,5 +54,5 @@ const classesSchema = new mongoose.Schema(
   { timestamps: true } // Automatically adds `createdAt` & `updatedAt`
 );
 
-const classes = mongoose.model("classes", classesSchema);
-export { classes };
+const Classes = mongoose.model("Classes", classesSchema);
+export default Classes;

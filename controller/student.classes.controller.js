@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { classes } from "../model/class.model.js";
+import Classes from "../model/class.model.js";
 import { Student } from "../model/student.model.js";
 import s3 from "../db/CloudStorage.js";
 
@@ -12,7 +12,7 @@ const join = async (req, res) => {
       return res.status(400).json({ message: "Link has expired" });
     }
 
-    const foundClass = await classes.findOne({
+    const foundClass = await Classes.findOne({
       subjectname: decoded.subjectname,
     });
     if (!foundClass)
@@ -23,7 +23,7 @@ const join = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const classToJoin = await classes.findOne({
+    const classToJoin = await Classes.findOne({
       subjectname: foundClass.subjectname,
     });
     if (!classToJoin) {
@@ -56,34 +56,34 @@ const getStudentClasses = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
     const watchedVideos = student.watchedVideos;
-    const enrolledClasses = await classes.find({
+    const enrolledClasses = await Classes.find({
       _id: { $in: student.enrolledClasses },
     });
 
     res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to get classes" });
+    res.status(500).json({ message: "Failed to get Classes" });
   }
 };
 
 const getclasscontent = async (req, res) => {
   const { id } = req.params;
   try {
-    const findclass = await classes.findById(id);
+    const findclass = await Classes.findById(id);
     const lectureTitles = findclass.file.map((f) => f.lectureTitle);
     const fileNames = findclass.file.map((f) => f.file);
     res.status(200).json({ success: true, lectureTitles, fileNames });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to get classes" });
+    res.status(500).json({ message: "Failed to get Classes" });
   }
 };
 
 const fetchVideo = async (req, res) => {
   const { id } = req.params;
   try {
-    const findclass = await classes.findOne({ "file.file": id });
+    const findclass = await Classes.findOne({ "file.file": id });
     if (!findclass) {
       return res.status(404).json({ message: "File not found" });
     }
@@ -116,7 +116,7 @@ const updateWatchedStatus = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    const findclass = await classes.findOne({ "file.file": videoId });
+    const findclass = await Classes.findOne({ "file.file": videoId });
     if (!findclass) {
       return res.status(404).json({ message: "File not found" });
     }

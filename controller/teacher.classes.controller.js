@@ -1,6 +1,6 @@
 import s3 from "../db/CloudStorage.js";
 import crypto from 'crypto';
-import { classes } from "../model/class.model.js";
+import Classes from "../model/class.model.js";
 import jwt from "jsonwebtoken";
 
 // Class creation
@@ -11,15 +11,15 @@ const CreateClass = async (req, res) => {
         if (!subjectname || !description) {
             return res.status(400).json({ message: "Please fill in all fields" });
         }
-        const alreadyExists = await classes.findOne({ subjectname, teacherId });
+        const alreadyExists = await Classes.findOne({ subjectname, teacherId });
         if (alreadyExists) {
             return res.status(400).json({ message: "Class already exists" });
         }
         const subjectCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const newclasses = new classes({ subjectname, description, teacherId, subjectCode });
+        const newclasses = new Classes({ subjectname, description, teacherId, subjectCode });
         await newclasses.save();
     
-        res.status(201).json({ message: "Classes created successfully", classesId: newclasses._id, subjectCode });
+        res.status(201).json({ message: "Classes created successfully", ClassesId: newclasses._id, subjectCode });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
@@ -30,7 +30,7 @@ const generateJoinLink = async (req, res) => {
         const { subjectname, expirationHours } = req.body;
         const teacherId = req.userId;
 
-        const foundClass = await classes.findOne({ subjectname, teacherId });
+        const foundClass = await Classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
 
         const expiresAt = new Date(Date.now() + expirationHours * 60 * 60 * 1000);
@@ -63,7 +63,7 @@ const uploadLecture = async (req, res) => {
     }
     try {
         const files = file.buffer;
-        const foundClass = await classes.findOne({ subjectname, teacherId });
+        const foundClass = await Classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
         const fileName = ImgName();
         const params = {
