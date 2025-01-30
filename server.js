@@ -6,9 +6,7 @@ import router from './routh/auth.routh.js';
 import cookieParser from 'cookie-parser';
 import teacherRouter from './routh/Teacher.routh.js';
 import Studentrouter from './routh/Student.js';
-import { generateTokenAndSetCookie } from './utils/token.js';
 import path from 'path';
-
 
 const app = express();
 
@@ -17,18 +15,9 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: 'https://spiro-pi.vercel.app', // Your frontend domain
+  origin: process.env.CLIENT_URL, // Ensure this environment variable is set to your frontend domain
   credentials: true
 }));
-
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "/frontend/dist")));
-
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-	});
-}
-
 app.use(cookieParser());
 app.use(express.json());
 
@@ -36,11 +25,13 @@ app.use('/api/v1', router);
 app.use('/api/v1', teacherRouter);
 app.use('/api/v1', Studentrouter);
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-app.post('/api/v1/', (req, res) => {
-    console.log("Hello");
-    res.send(req.cookies);
-});
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
     connectDB();
