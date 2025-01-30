@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: process.env.CLIENT_URL, // Ensure this environment variable is set to your frontend domain
-  credentials: true
+  withCredentials: true
 }));
 app.use(cookieParser());
 app.use(express.json());
