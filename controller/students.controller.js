@@ -29,12 +29,9 @@ export const SignupStudent = async (req ,res) =>{
         }
 
         const student = new Student({
-            name,
-            LastName,
             email,
             password: hashedPassword,
             passwordConfirm: hashedPasswordConfirm,
-            Phone,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24hrs
         });
