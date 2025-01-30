@@ -5,7 +5,7 @@ export const generateTokenAndSetCookie = (res, teacherId) => {
 		expiresIn: "7d",
 	});
 
-	res.cookies("token", token, {
+	res.cookie("token", token, {
 		httpOnly: true,
 		secure: true,
 		sameSite: "strict",
