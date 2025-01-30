@@ -39,7 +39,7 @@ app.use('/api/v1', Studentrouter);
 
 app.post('/api/v1/', (req, res) => {
     console.log("Hello");
-    console.log(req.cookies);
+    res.send(req.cookies);
 });
 
 app.listen(PORT, () => {
