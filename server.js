@@ -27,12 +27,6 @@ app.use('/api/v1', router);
 app.use('/api/v1', teacherRouter);
 app.use('/api/v1', Studentrouter);
 
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('client/build'));
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-  });
-}
 
 app.post('/api/v1/', (req, res) => {
     console.log("Hello");
