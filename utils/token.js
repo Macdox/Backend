@@ -5,7 +5,12 @@ export const generateTokenAndSetCookie = (res, teacherId) => {
 		expiresIn: "7d",
 	});
 
-	localStorage.setItem("token", token);
+	res.cookie("token", token, {
+		httpOnly: true,
+		secure: true,
+		sameSite: "strict",
+		maxAge: 7 * 24 * 60 * 60 * 1000,
+	});
 
 	return token;
 };
