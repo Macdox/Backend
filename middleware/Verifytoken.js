@@ -11,8 +11,6 @@ const verifyToken = (req, res, next) => {
     }
   }
 
-  console.log("Extracted Token:", token);
-
   if (!token) {
     return res.status(403).json({ message: "Access denied. No token provided." });
   }
