@@ -14,9 +14,12 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ["*"], // Ensure this environment variable is set to your frontend domain
+  origin: 'https://spiro-rq2g.onrender.com', // Your frontend domain
   credentials: true
 }));
+
+app.options('*', cors());
+
 app.use(cookieParser());
 app.use(express.json());
 
