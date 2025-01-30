@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: "https://spiro-pi.vercel.app", // Ensure this environment variable is set to your frontend domain
-  credential: true,
+  credentials: true,
 }));
 app.use(cookieParser());
 app.use(express.json());
