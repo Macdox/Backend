@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {
-  res.send("Cookies:", req.cookie);
+  res.send("Cookies:", req.cookies);
   res.send("Authorization Header:", req.headers.authorization);
 
-  const token = req.cookie.token || req.headers.authorization?.split(" ")[1];
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   res.send("Extracted Token:", token);
 
   if (!token) {
