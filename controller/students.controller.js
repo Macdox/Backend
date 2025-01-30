@@ -116,8 +116,7 @@ export const LoginStudent = async (req, res) => {
         }
         const verified = student.isVerified;
         //console.log("verified:",verified);
-         const token = generateTokenAndSetCookie(res, student._id);
-        console.log("token:",token);
+        generateTokenAndSetCookie(res, student._id);
         
 
         student.lastLogin = new Date();
