@@ -5,8 +5,7 @@ import s3 from "../db/CloudStorage.js";
 
 const join = async (req, res) => {
   const { token } = req.params;
-  const studentId = req.userId;
-  console.log(studentId) // Extracted from JWT
+  const studentId = req.userId;// Extracted from JWT
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (Date.now() > decoded.expiresAt) {
@@ -49,6 +48,8 @@ const join = async (req, res) => {
 };
 
 const getStudentClasses = async (req, res) => {
+  const studentId = req.userId;
+  console.log(studentId);
   try {
     const student = await Student.findById(req.userId).populate(
       "enrolledClasses"
