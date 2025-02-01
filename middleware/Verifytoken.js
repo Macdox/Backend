@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    req.userId = decoded.teacherId || decoded.studentId;
+    req.userId = decoded.teacherId;
     next();
   } catch (error) {
     console.error("JWT Verification Error:", error.message);
