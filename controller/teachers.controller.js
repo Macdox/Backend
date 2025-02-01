@@ -53,7 +53,7 @@ const registerTeacher = async (req, res) => {
 
 // program for Teacher login
 const loginTeacher = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     try {
         const teacher = await Teacher.findOne({ email });
@@ -66,7 +66,7 @@ const loginTeacher = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        generateTokenAndSetCookie(res, teacher._id);
+        generateTokenAndSetCookie(res, teacher._id, rememberMe);
 
         teacher.lastLogin = new Date();
         await teacher.save();

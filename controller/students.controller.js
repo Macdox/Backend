@@ -81,7 +81,7 @@ const VerifyStudent = async (req, res) => {
 
 // Student Login
 const LoginStudent = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     try {
         const student = await Student.findOne({ email });
@@ -93,7 +93,7 @@ const LoginStudent = async (req, res) => {
             return res.status(400).json({ message: "Password Does Not Match" });
         }
         const verified = student.isVerified;
-        generateTokenAndSetCookie(res, student._id);
+        generateTokenAndSetCookie(res, student._id, rememberMe);
 
         student.lastLogin = new Date();
         await student.save();
