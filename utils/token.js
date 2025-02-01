@@ -7,13 +7,13 @@ const generateTokenAndSetCookie = (res, userId, rememberMe = false) => {
 	const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
 		expiresIn,
 	});
-
-	return res.cookie("token", token, {
+	res.cookie("token", token, {
 		httpOnly: true,
 		secure: true,
 		sameSite: "none",
 		maxAge,
 	});
+	return token;
 };
 
 export { generateTokenAndSetCookie };
