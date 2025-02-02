@@ -61,7 +61,7 @@ const getStudentClasses = async (req, res) => {
     const enrolledClasses = await Classes.find({
       _id: { $in: student.enrolledClasses },
     });
-
+    console.log(enrolledClasses);
     res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {
     console.error(error);
