@@ -51,9 +51,10 @@ const getStudentClasses = async (req, res) => {
   const studentId = req.userId;
   console.log(studentId);
   try {
-    const student = await Student.findById(req.userId).populate(
+    const student = await Student.findById(studentId).populate(
       "enrolledClasses"
     );
+    console.log(student);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
