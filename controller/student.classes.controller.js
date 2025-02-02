@@ -56,7 +56,6 @@ const getStudentClasses = async (req, res) => {
     }
     const watchedVideos = student.watchedVideos;
     const enrolledClasses = student.enrolledClasses;
-    console.log(enrolledClasses);
     res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {
     console.error(error);
