@@ -49,18 +49,13 @@ const join = async (req, res) => {
 
 const getStudentClasses = async (req, res) => {
   const studentId = req.userId;
-  console.log(studentId);
   try {
-    const student = await Student.findById(studentId).populate(
-      "enrolledClasses"
-    );
+    const student = await Student.findById(studentId).populate('enrolledClasses');
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
     const watchedVideos = student.watchedVideos;
-    const enrolledClasses = await Classes.find({
-      _id: { $in: student.enrolledClasses },
-    });
+    const enrolledClasses = student.enrolledClasses;
     console.log(enrolledClasses);
     res.status(200).json({ enrolledClasses, watchedVideos });
   } catch (error) {

@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-
-const classesSchema = new mongoose.Schema(
+const classSchema = new mongoose.Schema(
   {
     subjectname: {
       type: String,
       trim: true, // Removes extra spaces
+      required: true,
     },
     description: {
       type: String,
@@ -32,10 +32,12 @@ const classesSchema = new mongoose.Schema(
       uppercase: true, // Converts to uppercase for consistency
       trim: true,
     },
-    file: {
-      file: { type: String, required: true },
-  lectureTitle: { type: String, required: true },
-    }, // Renamed from `file` to `files` (more intuitive)
+    file: [
+      {
+        lectureTitle: String,
+        file: String,
+      },
+    ],
     url: {
       type: String,
       trim: true,
@@ -54,5 +56,5 @@ const classesSchema = new mongoose.Schema(
   { timestamps: true } // Automatically adds `createdAt` & `updatedAt`
 );
 
-const Classes = mongoose.model("Classes", classesSchema);
+const Classes = mongoose.model("Classes", classSchema);
 export default Classes;

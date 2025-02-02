@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { sendVerificationEmail} from '../mailtrap/email.js';
 import { Student } from '../model/student.model.js';
-import { constrainedMemory } from 'process';
 
 // Student registration
 const SignupStudent = async (req, res) => {
@@ -53,12 +52,11 @@ const SignupStudent = async (req, res) => {
 
 // Student verification
 const VerifyStudent = async (req, res) => {
-    const { code } = req.body;  // Fixing the incorrect key
-    console.log(code);
+    const { otp } = req.body;  // Fixing the incorrect key
 
     try {
         const student = await Student.findOne({
-            verificationToken: code,
+            verificationToken: otp,
             verificationTokenExpiresAt: { $gt: Date.now() },
         });
 

@@ -64,6 +64,7 @@ const uploadLecture = async (req, res) => {
     try {
         const files = file.buffer;
         const foundClass = await Classes.findOne({ subjectname, teacherId });
+
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
         const fileName = ImgName();
         const params = {
