@@ -52,11 +52,11 @@ const SignupStudent = async (req, res) => {
 
 // Student verification
 const VerifyStudent = async (req, res) => {
-    const { otp } = req.body;  // Fixing the incorrect key
+    const { code } = req.body;  // Fixing the incorrect key
 
     try {
         const student = await Student.findOne({
-            verificationToken: otp,
+            verificationToken: code,
             verificationTokenExpiresAt: { $gt: Date.now() },
         });
 
