@@ -1,8 +1,9 @@
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 import { generateTokenAndSetCookie } from '../utils/token.js';
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/email.js';
+import { sendVerificationEmail} from '../mailtrap/email.js';
 import { Student } from '../model/student.model.js';
+import { constrainedMemory } from 'process';
 
 // Student registration
 const SignupStudent = async (req, res) => {
@@ -52,13 +53,15 @@ const SignupStudent = async (req, res) => {
 
 // Student verification
 const VerifyStudent = async (req, res) => {
-    const { code } = req.body;
+    const { code } = req.body;  // Fixing the incorrect key
+    console.log(code);
 
     try {
         const student = await Student.findOne({
             verificationToken: code,
             verificationTokenExpiresAt: { $gt: Date.now() },
         });
+
         if (!student) {
             return res.status(400).json({ message: "Invalid or expired verification code" });
         }
@@ -68,13 +71,15 @@ const VerifyStudent = async (req, res) => {
         student.verificationTokenExpiresAt = undefined;
         await student.save();
 
-        sendWelcomeEmail(student.email, student.name);
+        // Make sure sendWelcomeEmail is correctly imported before using it
+        // await sendWelcomeEmail(student.email, student.name); 
 
         res.status(200).json({
             success: true,
-            message: "Email verified successfully",
+            message: "Email verified successfully. Redirecting to login...",
         });
     } catch (error) {
+        console.error("Verification Error:", error);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };

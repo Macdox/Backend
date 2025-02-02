@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import crypto from "crypto";
 import { generateTokenAndSetCookie } from '../utils/token.js';
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailtrap/email.js';
+import { sendVerificationEmail} from '../mailtrap/email.js';
 import Teacher from '../model/teacher.model.js';
 
 // program for Teacher registration
@@ -120,7 +120,7 @@ const verifyTeacher = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Email verified successfully",
+            message: "Email verified successfully. Redirecting to login...",
             user: {
                 ...teacher._doc,
                 password: undefined,
