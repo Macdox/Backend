@@ -18,6 +18,7 @@ const registerTeacher = async (req, res) => {
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10);
+        const hashedPasswordConfirm = await bcryptjs.hash(passwordConfirm, 10);
         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
         if (password !== passwordConfirm) {
@@ -26,7 +27,7 @@ const registerTeacher = async (req, res) => {
         const teacher = new Teacher({
             email,
             password: hashedPassword,
-            passwordConfirm: hashedPassword,
+            passwordConfirm: hashedPasswordConfirm,
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24hrs 
         });

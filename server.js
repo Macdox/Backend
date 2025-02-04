@@ -32,15 +32,6 @@ app.use('/api/v1', teacherRouter);
 app.use('/api/v1', Studentrouter);
 
 
-cron.schedule("*/14 * * * *", async () => {
-  try {
-    await axios.get(process.env.URL);
-    console.log("Pinged the server");
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 app.listen(PORT, () => {
   connectDB();
   console.log(`Server is running on port ${PORT}`);

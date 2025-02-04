@@ -1,8 +1,10 @@
 import bcryptjs from 'bcryptjs';
 import crypto from 'crypto';
 import { generateTokenAndSetCookie } from '../utils/token.js';
-import { sendVerificationEmail} from '../mailtrap/email.js';
+import { sendVerificationEmail } from '../mailtrap/email.js';
 import { Student } from '../model/student.model.js';
+import s3 from '../db/CloudStorage.js';
+import mongoose from 'mongoose';
 
 // Student registration
 const SignupStudent = async (req, res) => {
@@ -85,32 +87,34 @@ const VerifyStudent = async (req, res) => {
 // Student Login
 const LoginStudent = async (req, res) => {
     const { email, password, rememberMe } = req.body;
-
     try {
         const student = await Student.findOne({ email });
         if (!student) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
-        const isPasswordMatch = await bcryptjs.compare(password, student.password);
+
+        const isPasswordMatch = await bcryptjs.compare(password, student.passwordConfirm);
+
         if (!isPasswordMatch) {
-            return res.status(400).json({ message: "Password Does Not Match" });
+            return res.status(400).json({ message: "Invalid credentials" });
         }
-        const verified = student.isVerified;
-        generateTokenAndSetCookie(res, student._id, rememberMe);
+
+        const token = generateTokenAndSetCookie(res, student._id, rememberMe);
 
         student.lastLogin = new Date();
         await student.save();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "User logged in successfully",
-            student: {
+            teacher: {
                 ...student._doc,
                 password: undefined,
             },
+            token,
         });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+        return res.status(400).json({ success: false, message: error.message });
     }
 };
 
@@ -179,7 +183,7 @@ const studentResetPassword = async (req, res) => {
 
 const studentAuth = async (req, res) => {
     try {
-        const student = await Student.findById(req.userId).select("-password");
+        const student = await Student.findById(req.user).select("-password");
         if (!student) {
             return res.status(400).json({ success: false, message: "User not found" });
         }
@@ -190,6 +194,104 @@ const studentAuth = async (req, res) => {
     }
 };
 
+
+const uploadProfilepic = async (req, res) => {
+    const ImagName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".png";
+    const file = req.file;
+    const studentId = req.user;
+    const student = await Student.findById(studentId);
+    if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Delete the previous profile picture if it exists
+    if (student.ProfilePicUrl) {
+        const previousKey = student.ProfilePicUrl.split('/').pop();
+        const deleteParams = {
+            Bucket: "profile-pic",
+            Key: previousKey,
+        };
+        s3.deleteObject(deleteParams, (err, data) => {
+            if (err) {
+                console.error("Error deleting previous profile picture:", err);
+            }
+        });
+    }
+
+    const newFileName = ImagName();
+    const profilePic = file.buffer;
+    const params = {
+        Bucket: "profile-pic",
+        Key: newFileName,
+        Body: profilePic,
+    };
+    const signedUrl = s3.getSignedUrl('getObject', {
+        Bucket: "profile-pic",
+        Key: newFileName,
+        Expires: 3600 * 24 * 7 // 1 week
+    });
+    s3.upload(params, async (err, data) => {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            student.ProfilePicUrl = signedUrl;
+            await student.save();
+            res.status(200).json({
+                success: true,
+                message: "File uploaded successfully",
+                student: {
+                    ...student._doc,
+                    password: undefined,
+                },
+            });
+        }
+    });
+};
+
+const profile = async (req, res) => {
+    try {
+        const userId = req.user; // Extract userId from decoded token
+        const student = await Student.findById(userId) // Use ObjectId
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+        res.status(200).json({
+            success: true,
+            student: {
+                ...student._doc,
+                password: undefined,
+                passwordConfirm: undefined,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
+};
+
+const ProfileUpdate = async (req, res) => {
+    const { name, phone, branch, yearAndDivision, gender } = req.body;
+    const studentId = req.user;
+    const student = await Student.findById(studentId);
+    if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+    }
+    student.FullName = name;
+    student.phone = phone;
+    student.Branch = branch;
+    student.Class = yearAndDivision;
+    student.Gender = gender;
+    await student.save();
+    res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        student: {
+            ...student._doc,
+            password: undefined,
+            passwordConfirm: undefined,
+        },
+    });
+};
+
 export {
     SignupStudent,
     VerifyStudent,
@@ -198,4 +300,7 @@ export {
     StudentForgotPassword,
     studentResetPassword,
     studentAuth,
+    uploadProfilepic,
+    profile,
+    ProfileUpdate
 };
