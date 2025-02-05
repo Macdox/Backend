@@ -100,7 +100,6 @@ const LoginStudent = async (req, res) => {
         }
 
         const token = generateTokenAndSetCookie(res, student._id, rememberMe);
-        res.cookies('token', token)
         student.lastLogin = new Date();
         await student.save();
 
