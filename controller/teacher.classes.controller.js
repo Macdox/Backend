@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 // Class creation
 const CreateClass = async (req, res) => {
     const { subjectname, description } = req.body;
-    const teacherId = req.userId;
+    const teacherId = req.user;
     try {
         if (!subjectname || !description) {
             return res.status(400).json({ message: "Please fill in all fields" });
@@ -28,7 +28,7 @@ const CreateClass = async (req, res) => {
 const generateJoinLink = async (req, res) => {
     try {
         const { subjectname, expirationHours } = req.body;
-        const teacherId = req.userId;
+        const teacherId = req.user;
 
         const foundClass = await Classes.findOne({ subjectname, teacherId });
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
@@ -37,7 +37,7 @@ const generateJoinLink = async (req, res) => {
 
         const token = jwt.sign({ subjectname, expiresAt: expiresAt.getTime() }, process.env.JWT_SECRET);
 
-        const link = `https://localhost:8000/api/v1/join/${token}`;
+        const link = `http://localhost:8000/api/v1/join/${token}`;
 
         foundClass.studentLinks.push({ link, expiresAt });
         await foundClass.save();
@@ -53,7 +53,8 @@ const uploadLecture = async (req, res) => {
     const ImgName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".mp4";
     const { subjectname, lectureTitle } = req.body;
     const file = req.file;
-    const teacherId = req.userId;
+    const teacherId = req.user;
+    console.log(teacherId);
 
     if (!subjectname || !lectureTitle) {
         return res.status(400).json({ message: "Please fill in all fields" });
@@ -64,7 +65,6 @@ const uploadLecture = async (req, res) => {
     try {
         const files = file.buffer;
         const foundClass = await Classes.findOne({ subjectname, teacherId });
-
         if (!foundClass) return res.status(404).json({ message: "Class not found" });
         const fileName = ImgName();
         const params = {

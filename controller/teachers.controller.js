@@ -3,7 +3,6 @@ import crypto from "crypto";
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { sendVerificationEmail} from '../mailtrap/email.js';
 import Teacher from '../model/teacher.model.js';
-
 // program for Teacher registration
 const registerTeacher = async (req, res) => {
     const { email, password, passwordConfirm } = req.body;
@@ -67,8 +66,9 @@ const loginTeacher = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        generateTokenAndSetCookie(res, teacher._id, rememberMe);
-
+        const token = generateTokenAndSetCookie(res, teacher._id, rememberMe);
+        res.cookie("token", token);
+          
         teacher.lastLogin = new Date();
         await teacher.save();
 

@@ -18,11 +18,10 @@ const join = async (req, res) => {
     if (!foundClass)
       return res.status(404).json({ message: "Class not found" });
 
-    const student = await Student.findById(req.user);
+    const student = await Student.findById(studentId);
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-
     const classToJoin = await Classes.findOne({
       subjectname: foundClass.subjectname,
     });
@@ -30,7 +29,7 @@ const join = async (req, res) => {
       return res.status(404).json({ message: "Class not found" });
     }
 
-    if (!student.enrolledClasses.includes(foundClass.subjectname)) {
+    if (!student.enrolledClasses.includes(classToJoin._id)) {
       student.enrolledClasses.push(classToJoin._id);
       await student.save();
     } else {

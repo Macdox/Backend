@@ -100,7 +100,7 @@ const LoginStudent = async (req, res) => {
         }
 
         const token = generateTokenAndSetCookie(res, student._id, rememberMe);
-
+        res.cookies('token', token)
         student.lastLogin = new Date();
         await student.save();
 
@@ -120,7 +120,7 @@ const LoginStudent = async (req, res) => {
 
 // Student Logout
 const LogoutStudent = async (req, res) => {
-    res.clearCookie('token');
+    res.clearCookie ('token');
     res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
