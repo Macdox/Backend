@@ -2,13 +2,14 @@ import s3 from "../db/CloudStorage.js";
 import crypto from 'crypto';
 import Classes from "../model/class.model.js";
 import jwt from "jsonwebtoken";
+import Teacher from "../model/teacher.model.js";
 
 // Class creation
 const CreateClass = async (req, res) => {
-    const { subjectname, description } = req.body;
+    const { subjectname } = req.body;
     const teacherId = req.user;
     try {
-        if (!subjectname || !description) {
+        if (!subjectname) {
             return res.status(400).json({ message: "Please fill in all fields" });
         }
         const alreadyExists = await Classes.findOne({ subjectname, teacherId });
@@ -16,8 +17,11 @@ const CreateClass = async (req, res) => {
             return res.status(400).json({ message: "Class already exists" });
         }
         const subjectCode = Math.floor(100000 + Math.random() * 900000).toString();
-        const newclasses = new Classes({ subjectname, description, teacherId, subjectCode });
+        const newclasses = new Classes({ subjectname, teacherId, subjectCode, });
         await newclasses.save();
+        const teacher = await Teacher.findById(teacherId);
+        teacher.classes.push(newclasses._id);
+        await teacher.save();
     
         res.status(201).json({ message: "Classes created successfully", ClassesId: newclasses._id, subjectCode });
     } catch (error) {
@@ -27,7 +31,9 @@ const CreateClass = async (req, res) => {
 
 const generateJoinLink = async (req, res) => {
     try {
-        const { subjectname, expirationHours } = req.body;
+        const { subjectname } = req.body;
+        console.log(subjectname);
+        const expirationHours = 60 
         const teacherId = req.user;
 
         const foundClass = await Classes.findOne({ subjectname, teacherId });

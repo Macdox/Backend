@@ -180,19 +180,6 @@ const studentResetPassword = async (req, res) => {
     }
 };
 
-const studentAuth = async (req, res) => {
-    try {
-        const student = await Student.findById(req.user).select("-password");
-        if (!student) {
-            return res.status(400).json({ success: false, message: "User not found" });
-        }
-
-        res.status(200).json({ success: true, student });
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
-};
-
 
 const uploadProfilepic = async (req, res) => {
     const ImagName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".png";
@@ -206,6 +193,7 @@ const uploadProfilepic = async (req, res) => {
     // Delete the previous profile picture if it exists
     if (student.ProfilePicUrl) {
         const previousKey = student.ProfilePicUrl.split('/').pop();
+        console.log("Previous key:", previousKey);
         const deleteParams = {
             Bucket: "profile-pic",
             Key: previousKey,
@@ -227,7 +215,7 @@ const uploadProfilepic = async (req, res) => {
     const signedUrl = s3.getSignedUrl('getObject', {
         Bucket: "profile-pic",
         Key: newFileName,
-        Expires: 3600 * 24 * 7 // 1 week
+        Expires: 60 * 60 * 24 * 7, // 1 week
     });
     s3.upload(params, async (err, data) => {
         if (err) {
@@ -298,7 +286,6 @@ export {
     LogoutStudent,
     StudentForgotPassword,
     studentResetPassword,
-    studentAuth,
     uploadProfilepic,
     profile,
     ProfileUpdate

@@ -3,7 +3,6 @@ import {
   registerTeacher,
   loginTeacher,
   checkAuth,
-  logoutTeacher,
   resetPassword,
   forgotPassword,
   verifyTeacher,
@@ -15,7 +14,6 @@ import {
   SignupStudent,
   StudentForgotPassword,
   studentResetPassword,
-  studentAuth,
   VerifyStudent,
 } from "../controller/students.controller.js";
 
@@ -30,15 +28,11 @@ import { join } from "../controller/student.classes.controller.js";
 const router = express.Router();
 
 // Teacher auth check
-router.get("/teacher-auth", verifyToken, checkAuth);
-
-// Student auth check
-router.get("/student-auth", verifyToken, studentAuth);
+router.get("/auth", verifyToken, checkAuth);
 
 // Teacher registration, login, and logout
 router.post("/teachersignup", registerTeacher);
 router.post("/teacherlogin", loginTeacher);
-router.post("/teacherLogout", logoutTeacher);
 
 // Teacher verification and password reset
 router.post("/resetpassword/:token", resetPassword);

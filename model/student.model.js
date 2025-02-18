@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role:{
+      type: String,
+      default: "student",
+    },
     enrolledClasses: [
       {
         type: mongoose.Schema.Types.ObjectId, // Corrected reference type

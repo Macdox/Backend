@@ -32,6 +32,16 @@ const teacherSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+      type: String,
+      default: "teacher",
+    },
+    classes: [
+          {
+            type: mongoose.Schema.Types.ObjectId, // Corrected reference type
+            ref: "Classes",
+          },
+        ],
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,

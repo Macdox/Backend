@@ -3,6 +3,8 @@ import crypto from "crypto";
 import { generateTokenAndSetCookie } from '../utils/token.js';
 import { sendVerificationEmail} from '../mailtrap/email.js';
 import Teacher from '../model/teacher.model.js';
+import Student from '../model/student.model.js';
+import Classes from '../model/class.model.js';
 // program for Teacher registration
 const registerTeacher = async (req, res) => {
     const { email, password, passwordConfirm } = req.body;
@@ -66,9 +68,15 @@ const loginTeacher = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        const token = generateTokenAndSetCookie(res, teacher._id, rememberMe);
-        res.cookie("token", token);
-          
+        const token = generateTokenAndSetCookie(res, teacher._id, rememberMe)
+        
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",
+            maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : undefined,
+        }
+        )
         teacher.lastLogin = new Date();
         await teacher.save();
 
@@ -79,6 +87,7 @@ const loginTeacher = async (req, res) => {
                 ...teacher._doc,
                 password: undefined,
             },
+            token,
         });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
@@ -88,12 +97,16 @@ const loginTeacher = async (req, res) => {
 // program for teacher auth check
 const checkAuth = async (req, res) => {
     try {
-        const teacher = await Teacher.findById(req.userId).select("-password");
-        if (!teacher) {
+        const teacher = await Teacher.findById(req.user).select("-password");
+        const student = await Student.findById(req.user).select("-password");
+        if (!student) {
+            if(teacher)
+            {
+                return res.status(200).json({ success: true, user: teacher });
+            }
             return res.status(400).json({ success: false, message: "User not found" });
         }
-
-        res.status(200).json({ success: true, teacher });
+        res.status(200).json({ success: true, user:student });
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
     }
@@ -188,12 +201,15 @@ const resetPassword = async (req, res) => {
     }
 };
 
-// program for teacher logout
-const logoutTeacher = async (req, res) => {
-    res.clearCookie("token");
-    res.status(200).json({ success: true, message: "Logged out successfully" });
+const profile = async (req, res) => {
+    const token = req.user;
+    const teacher = await Teacher.findById(token);
+    if (!teacher) {
+        return res.status(404).json({ message: "Teacher not found" });
+    }
+    const classes = await Classes.find({ teacherId: teacher._id });
+    res.status(200).json({ success: true,teacher, classes_name: classes.map((c) => c.subjectname) });
 };
-
 export {
     registerTeacher,
     loginTeacher,
@@ -201,5 +217,5 @@ export {
     verifyTeacher,
     forgotPassword,
     resetPassword,
-    logoutTeacher,
+    profile,
 };

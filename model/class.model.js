@@ -7,11 +7,6 @@ const classSchema = new mongoose.Schema(
       trim: true, // Removes extra spaces
       required: true,
     },
-    description: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     teacherId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher",
