@@ -57,10 +57,15 @@ const generateJoinLink = async (req, res) => {
 
 const uploadLecture = async (req, res) => {
     const ImgName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".mp4";
-    const { subjectname, lectureTitle } = req.body;
+    const { subjectname, lectureTitle } = req.body; // Extract from req.body
     const file = req.file;
     const teacherId = req.user;
     console.log(teacherId);
+
+    // Print all form data entries
+    console.log(`subjectname: ${subjectname}`);
+    console.log(`lectureTitle: ${lectureTitle}`);
+    console.log(`file: ${file.originalname}`);
 
     if (!subjectname || !lectureTitle) {
         return res.status(400).json({ message: "Please fill in all fields" });
@@ -84,7 +89,7 @@ const uploadLecture = async (req, res) => {
             } else {
                 foundClass.file.push({ file: fileName, lectureTitle: lectureTitle });
                 await foundClass.save();
-                res.status(200).send("File uploaded successfully");
+                res.status(200).json({ message: "File uploaded successfully" });
             }
         });
     } catch (error) {
