@@ -94,7 +94,7 @@ const loginTeacher = async (req, res) => {
     }
 }
 
-// program for teacher auth check
+// program for user auth check
 const checkAuth = async (req, res) => {
     try {
         const teacher = await Teacher.findById(req.user).select("-password");
@@ -210,6 +210,7 @@ const profile = async (req, res) => {
     const classes = await Classes.find({ teacherId: teacher._id });
     res.status(200).json({ success: true,teacher, classes_name: classes.map((c) => c.subjectname) });
 };
+
 export {
     registerTeacher,
     loginTeacher,

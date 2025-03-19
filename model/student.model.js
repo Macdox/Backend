@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema(
     ProfilePicUrl: {
       type: String,
     },
+    ProfilePicKey:{
+      type: String,
+    },
     FullName: {
       type: String,
       trim: true, // Removes extra spaces

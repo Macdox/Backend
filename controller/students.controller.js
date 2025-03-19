@@ -5,6 +5,7 @@ import { sendVerificationEmail } from '../mailtrap/email.js';
 import { Student } from '../model/student.model.js';
 import s3 from '../db/CloudStorage.js';
 import mongoose from 'mongoose';
+import { log } from 'console';
 
 // Student registration
 const SignupStudent = async (req, res) => {
@@ -180,6 +181,7 @@ const studentResetPassword = async (req, res) => {
     }
 };
 
+//profile-section
 
 const uploadProfilepic = async (req, res) => {
     const ImagName = (bytes = 32) => crypto.randomBytes(bytes).toString("hex") + ".png";
@@ -191,20 +193,38 @@ const uploadProfilepic = async (req, res) => {
     }
 
     // Delete the previous profile picture if it exists
-    if (student.ProfilePicUrl) {
-        const previousKey = student.ProfilePicUrl.split('/').pop();
-        console.log("Previous key:", previousKey);
+    // if (student.ProfilePicUrl) {
+    //     const previousKey = student.ProfilePicUrl.split('/').pop();
+    //     console.log("Previous key:", previousKey);
+
+    //     // const deleteParams = {
+    //     //     Bucket: "profile-pic",
+    //     //     Key: previousKey,
+    //     // };
+    //     // s3.deleteObject(deleteParams, (err, data) => {
+    //     //     if (err) {
+    //     //         console.error("Error deleting previous profile picture:", err);
+    //     //     }
+    //     // });
+    // }
+    
+    if(student.ProfilePicKey){
+        console.log("existes",student.ProfilePicKey);
+
         const deleteParams = {
             Bucket: "profile-pic",
-            Key: previousKey,
+            Key: student.ProfilePicKey,
         };
+
         s3.deleteObject(deleteParams, (err, data) => {
             if (err) {
                 console.error("Error deleting previous profile picture:", err);
             }
-        });
-    }
+            console.log("Deleted");
+        }   );
 
+        
+    }
     const newFileName = ImagName();
     const profilePic = file.buffer;
     const params = {
@@ -212,16 +232,17 @@ const uploadProfilepic = async (req, res) => {
         Key: newFileName,
         Body: profilePic,
     };
-    const signedUrl = s3.getSignedUrl('getObject', {
-        Bucket: "profile-pic",
-        Key: newFileName,
-        Expires: 60 * 60 * 24 * 7, // 1 week
-    });
+    // const signedUrl = s3.getSignedUrl('getObject', {
+    //     Bucket: "profile-pic",
+    //     Key: newFileName,
+    //     // Expires: 60 * 60 * 24 * 7, // 1 week
+    // });
     s3.upload(params, async (err, data) => {
         if (err) {
             res.status(500).send(err);
         } else {
-            student.ProfilePicUrl = signedUrl;
+            student.ProfilePicKey = newFileName;
+            console.log("Key", student.ProfilePicKey);
             await student.save();
             res.status(200).json({
                 success: true,
@@ -235,6 +256,7 @@ const uploadProfilepic = async (req, res) => {
     });
 };
 
+//tofetchprofile
 const profile = async (req, res) => {
     try {
         const userId = req.user; // Extract userId from decoded token
@@ -242,6 +264,14 @@ const profile = async (req, res) => {
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
+        const key = student.ProfilePicKey;
+        const params = {
+            Bucket: "profile-pic",
+            Key: key,
+        }
+        const signedUrl = s3.getSignedUrl('getObject', params);
+        student.ProfilePicUrl = signedUrl;
+        await student.save();
         res.status(200).json({
             success: true,
             student: {

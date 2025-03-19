@@ -28,6 +28,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "openai": "^4.87.3",
     "path": "^0.12.7"
   },
   "devDependencies": {

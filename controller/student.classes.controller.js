@@ -95,7 +95,7 @@ const fetchVideo = async (req, res) => {
     const params = {
       Bucket: process.env.R2_BUCKET_NAME,
       Key: id,
-      Expires: 3600, // Set expires here
+      // Expires: 3600, // Set expires here
       ResponseContentDisposition: "inline", // Ensure the video is displayed inline
       ResponseContentType: "video/mp4",
     };
