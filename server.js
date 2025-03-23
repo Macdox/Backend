@@ -34,6 +34,6 @@ app.use('/api/v1', Studentrouter);
 const PORT = process.env.PORT || 8000
 app.listen(PORT,'0.0.0.0', () => {
   connectDB();
-  api();
+  // api();
   console.log(`Server is running on port ${PORT}`);
 });
